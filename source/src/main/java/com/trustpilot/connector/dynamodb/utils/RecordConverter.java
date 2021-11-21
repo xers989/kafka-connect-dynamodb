@@ -1,5 +1,6 @@
 package com.trustpilot.connector.dynamodb.utils;
 
+import com.amazonaws.services.dynamodbv2.document.ItemUtils;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
@@ -98,13 +99,22 @@ public class RecordConverter {
             }
             throw new Exception("Unsupported key AttributeValue");
         }
-
+        
+        
         Struct valueData = new Struct(valueSchema)
-                .put(Envelope.FieldName.VERSION, sourceInfo.version)
-                .put(Envelope.FieldName.DOCUMENT, objectMapper.writeValueAsString(sanitisedAttributes))
-                .put(Envelope.FieldName.SOURCE, SourceInfo.toStruct(sourceInfo))
-                .put(Envelope.FieldName.OPERATION, op.code())
-                .put(Envelope.FieldName.TIMESTAMP, arrivalTimestamp.toEpochMilli());
+        .put(Envelope.FieldName.VERSION, sourceInfo.version)
+        .put(Envelope.FieldName.DOCUMENT, ItemUtils.toItem(sanitisedAttributes).toString())
+        .put(Envelope.FieldName.SOURCE, SourceInfo.toStruct(sourceInfo))
+        .put(Envelope.FieldName.OPERATION, op.code())
+        .put(Envelope.FieldName.TIMESTAMP, arrivalTimestamp.toEpochMilli());
+
+        
+        //Struct valueData = new Struct(valueSchema)
+        //        .put(Envelope.FieldName.VERSION, sourceInfo.version)
+        //        .put(Envelope.FieldName.DOCUMENT, objectMapper.writeValueAsString(sanitisedAttributes))
+        //        .put(Envelope.FieldName.SOURCE, SourceInfo.toStruct(sourceInfo))
+        //        .put(Envelope.FieldName.OPERATION, op.code())
+        //        .put(Envelope.FieldName.TIMESTAMP, arrivalTimestamp.toEpochMilli());
 
         return new SourceRecord(
                 Collections.singletonMap("table_name", sourceInfo.tableName),

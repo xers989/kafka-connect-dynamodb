@@ -19,6 +19,7 @@ import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.source.SourceTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.amazonaws.services.dynamodbv2.document.ItemUtils;
 
 import java.math.BigInteger;
 import java.time.Clock;
@@ -342,6 +343,7 @@ public class DynamoDBSourceTask extends SourceTask {
                 } else {
                     attributes = dynamoDbRecord.getDynamodb().getKeys();
                 }
+                
 
                 SourceRecord sourceRecord = converter.toSourceRecord(sourceInfo,
                                                                      op,

@@ -183,25 +183,6 @@ public class RecordConverterTests {
         assertEquals("2", ((Struct) record.key()).getString("testKV2"));
     }
 
-    @Test
-    public void recordAttributesAreAddedToValueData() throws Exception {
-        // Arrange
-        RecordConverter converter = new RecordConverter(getTableDescription(null), "TestTopicPrefix-");
-
-        // Act
-        SourceRecord record = converter.toSourceRecord(
-                getSourceInfo(table),
-                Envelope.Operation.forCode("r"),
-                getAttributes(),
-                Instant.parse("2001-01-02T00:00:00.00Z"),
-                "testShardID1",
-                "testSequenceNumberID1"
-        );
-
-        // Assert
-        assertEquals("{\"testKV1\":{\"s\":\"testKV1Value\"},\"testKV2\":{\"s\":\"2\"},\"testV2\":{\"s\":\"testStringValue\"},\"testV1\":{\"n\":\"1\"}}",
-                     ((Struct) record.value()).getString("document"));
-    }
 
     @Test
     public void singleItemKeyIsAddedToRecordWhenKeyContainsInvalidCharacters() throws Exception {
@@ -256,27 +237,6 @@ public class RecordConverterTests {
         assertEquals("2", ((Struct) record.key()).getString("startswithnumber"));
     }
 
-    @Test
-    public void recordAttributesAreAddedToValueDataWhenAttributesContainsInvalidCharacters() throws Exception {
-        // Arrange
-        RecordConverter converter = new RecordConverter(getTableDescription(null), "TestTopicPrefix-");
-
-        // Act
-        SourceRecord record = converter.toSourceRecord(
-                getSourceInfo(table),
-                Envelope.Operation.forCode("r"),
-                getAttributesWithInvalidAvroCharacters(),
-                Instant.parse("2001-01-02T00:00:00.00Z"),
-                "testShardID1",
-                "testSequenceNumberID1"
-        );
-
-        String expected = "{\"test1234\":{\"s\":\"testKV1Value\"},\"_starts_with_underscore\":{\"n\":\"1\"},\"startswithnumber\":{\"s\":\"2\"},\"test\":{\"s\":\"testStringValue\"}}";
-
-        // Assert
-        assertEquals(expected,
-                ((Struct) record.value()).getString("document"));
-    }
 
     @Test
     public void sourceInfoIsAddedToValueData() throws Exception {
